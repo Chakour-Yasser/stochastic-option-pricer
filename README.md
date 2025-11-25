@@ -1,34 +1,84 @@
-# stochastic-option-pricer
-A robust Python pricing engine for European Options comparing Analytical (Black-Scholes) and Numerical (Monte Carlo) methods. Includes Variance Reduction techniques and 3D Greeks visualization.
-# Stochastic Option Pricer 📉🎲
+# Stochastic Option Pricing Engine 📉⚡
 
-## Overview
-This project implements a pricing engine for **European Call and Put Options**, bridging the gap between analytical solutions and stochastic simulations. Ideally suited for validating theoretical pricing models against numerical convergence.
+[![Language](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)]()
+[![Status](https://img.shields.io/badge/Status-Academic%20Project-orange.svg)]()
 
-## Key Features
-* **Analytical Pricing:** Full implementation of the **Black-Scholes-Merton** closed-form solution.
-* **Monte Carlo Engine:** Vectorized simulation of Geometric Brownian Motion (GBM) paths ($dS_t = rS_tdt + \sigma S_tdW_t$).
-* **Variance Reduction:** Implements Antithetic Variates to improve convergence speed and precision.
-* **Risk Management:** Automatic calculation of **Greeks** (Delta, Gamma, Vega, Theta, Rho).
-* **Visualization:** * Convergence analysis of Monte Carlo estimator vs Black-Scholes price (Law of Large Numbers).
-    * 3D Heatmaps of option sensitivities (Spot vs Time).
+## 📖 Overview
+This project implements a robust pricing engine for **European Call and Put Options**, developed as part of the **Applied Mathematics (MACS)** curriculum at **Télécom Paris**.
 
-## Mathematical Background
-The pricer solves the valuation problem under the risk-neutral measure $\mathbb{Q}$:
+It bridges the gap between analytical solutions and numerical simulations, providing a comparative analysis of:
+1.  **Black-Scholes-Merton (BSM)** closed-form solution.
+2.  **Monte Carlo (MC)** simulations with variance reduction techniques.
+
+The engine also includes a risk management module to compute and visualize **Greeks** (Sensitivities).
+
+## 🧮 Mathematical Framework
+
+### 1. Underlying Asset Dynamics
+The asset price $S_t$ is modeled using a **Geometric Brownian Motion (GBM)** under the risk-neutral measure $\mathbb{Q}$:
+
+$$dS_t = r S_t dt + \sigma S_t dW_t^\mathbb{Q}$$
+
+Where:
+* $r$: Risk-free interest rate.
+* $\sigma$: Constant volatility.
+* $W_t^\mathbb{Q}$: Wiener process under $\mathbb{Q}$.
+
+### 2. Pricing Valuation
+The value of a European option $V_0$ with payoff $\Phi(S_T)$ is given by the risk-neutral expectation:
+
 $$V_0 = e^{-rT} \mathbb{E}^{\mathbb{Q}} [ \Phi(S_T) ]$$
-Where $S_T$ follows a GBM and $\Phi$ is the payoff function.
 
-## Results
+### 3. Numerical Integration (Monte Carlo)
+We approximate the expectation using the Law of Large Numbers. To ensure faster convergence ($\mathcal{O}(1/\sqrt{N})$), we implement **Antithetic Variates** as a variance reduction technique:
 
-<img width="1200" height="700" alt="Image" src="https://github.com/user-attachments/assets/d526db24-d3a2-4178-bf42-d76049a4de90" />
+$$\hat{V}_{MC} = \frac{e^{-rT}}{2N} \sum_{i=1}^{N} \left( \Phi(S_T^{(i)}) + \Phi(\tilde{S}_T^{(i)}) \right)$$
 
-> *Figure 1: Monte Carlo convergence with 95% Confidence Interval.*
+## 🚀 Key Features
 
-<img width="1000" height="800" alt="Image" src="https://github.com/user-attachments/assets/ed6a3520-c750-40e1-b500-29a38eb78eb1" />
+* **Vectorized Implementation:** Fully vectorized utilizing `NumPy` broadcasting for high-performance simulations ($>10^6$ paths in seconds).
+* **Convergence Analysis:** Automated plotting of the MC estimator convergence with **95% Confidence Intervals** (Central Limit Theorem).
+* **Risk Management (Greeks):** Analytical computation of Delta ($\Delta$), Gamma ($\Gamma$), Vega ($\nu$), Theta ($\Theta$), and Rho ($\rho$).
+* **3D Visualization:** Interactive surfaces showing the impact of "Moneyness" and "Time to Maturity" on hedging parameters.
 
-> *Figure 2: Delta sensitivity surface (Spot Price vs Time to Maturity)*
+## 📊 Results & Visualization
 
-## Installation & Usage
-```bash
-pip install -r requirements.txt
-python main.py
+### Convergence Analysis
+The following plot demonstrates the asymptotic stability of the Monte Carlo estimator towards the analytical BSM price. The gray area represents the confidence interval shrinking as $N$ increases.
+
+<img width="1200" height="700" alt="convergence_with_confidence" src="https://github.com/user-attachments/assets/40054928-ca1f-4b55-9465-7561710df6e3" />
+
+*Figure 1: Monte Carlo convergence (500k simulations) vs Black-Scholes benchmark.*
+
+### Delta Sensitivity Surface
+This heatmap illustrates the **Delta Hedging** risk profile. Note the steep transition (Gamma risk) as $T \to 0$ for At-The-Money options.
+
+<img width="1000" height="800" alt="delta_heatmap" src="https://github.com/user-attachments/assets/361b3113-dfd8-4eaa-8c35-2731c1e37572" />
+
+*Figure 2: Delta sensitivity across Spot Price and Time to Maturity.*
+
+## 💻 Installation & Usage
+
+1.  **Clone the repository:**
+    ```bash
+    git clone [https://github.com/Chakour-Yasser/stochastic-option-pricer.git](https://github.com/Chakour-Yasser/stochastic-option-pricer.git)
+    cd stochastic-option-pricer
+    ```
+
+2.  **Install dependencies:**
+    ```bash
+    pip install numpy scipy matplotlib seaborn
+    ```
+
+3.  **Run the analysis:**
+    ```bash
+    python main.py
+    ```
+
+## 📚 References
+* **Hull, J. C.** (2018). *Options, Futures, and Other Derivatives*. Pearson.
+* **Glasserman, P.** (2003). *Monte Carlo Methods in Financial Engineering*. Springer.
+
+---
+*Author: Yasser Chakour - Engineering Student at Télécom Paris.*
